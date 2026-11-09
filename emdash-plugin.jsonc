@@ -1,0 +1,61 @@
+{
+	"$schema": "./node_modules/@emdash-cms/plugin-cli/schemas/emdash-plugin.schema.json",
+
+	"slug": "revid",
+	"name": "Revid",
+	// Tibo's Atmosphere account (@tmaker.io). Swap for the @revid.ai account's
+	// DID before the first publish if Revid gets its own account.
+	"publisher": "did:plc:wgdzguax6q5vw3ddevozzyrp",
+	"repo": "https://github.com/revid-ai/emdash-plugin-revid",
+
+	"license": "MIT",
+	"author": { "name": "Revid", "url": "https://www.revid.ai" },
+	"security": { "email": "hello@revid.ai" },
+	"description": "Turn each post into a short video with voice, captions and music, and give your site's AI agent Revid tools.",
+	"keywords": ["video", "ai", "social", "tiktok", "youtube"],
+	"sections": {
+		"description": { "file": "./docs/description.md" },
+		"installation": { "file": "./docs/installation.md" },
+	},
+
+	// Changing the trust contract between releases needs a major version.
+	"capabilities": ["content:read", "network:request"],
+	// The Revid public API.
+	"allowedHosts": ["www.revid.ai"],
+	"storage": {
+		// One record per entry: the latest video made from it.
+		"videos": { "indexes": ["createdAt", "entryId"] },
+	},
+
+	"release": {
+		"artifacts": {
+			"icon": { "file": "./assets/icon.png" },
+		},
+	},
+
+	"admin": {
+		"pages": [{ "path": "/videos", "label": "Revid videos", "icon": "video" }],
+		"settingsSchema": {
+			"apiKey": { "type": "secret", "label": "Revid API key" },
+			"autoVideo": { "type": "boolean", "label": "Make a video when a post is published", "default": false },
+			"autoCollections": { "type": "string", "label": "Collections for automatic videos", "default": "posts" },
+			"aspectRatio": { "type": "string", "label": "Aspect ratio", "default": "9:16" },
+			"targetDuration": { "type": "number", "label": "Target length in seconds", "default": 45, "min": 10, "max": 180 },
+		},
+		"editorPanels": [{ "id": "video", "title": "Revid video", "route": "editor/panel" }],
+		"editorActions": [
+			{
+				"id": "make-video",
+				"label": "Make a Revid video",
+				"route": "editor/make-video",
+				"placement": "overflow",
+				"confirm": {
+					"title": "Make a video from this entry?",
+					"text": "Revid writes a short video from the saved entry. It uses credits from your Revid account.",
+					"confirm": "Make video",
+					"deny": "Cancel",
+				},
+			},
+		],
+	},
+}
